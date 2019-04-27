@@ -41,17 +41,33 @@ public class StoriesFragment extends Fragment {
         WindowUtil.doOnApplyWindowInsetsToPadding(recyclerView, true, true);
 
         //TODO create a adapter
-
+        StoriesAdapter adapter = new StoriesAdapter();
         //TODO create a grid layout manager with default span of 2 and the SpanSizeLookup for each type
-
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return adapter.getSpanSize(position);
+            }
+        });
         //TODO set up the recyclerView with the layoutManager and adapter
-
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
         //TODO add a callback to the adapter that calls the method onStoryClicked when the user clicks on the list item
+        adapter.setCallback(new StoryCardViewHolder.StoryCardClickListener() {
+            @Override
+            public void onStoryCardCLick(Story story) {
+                Toast.makeText(getContext(), story.getTitle(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
 
         DataSources.getInstance().getStoryCards(new DataSources.Callback<List<Story>>() {
             @Override
             public void onDataFetched(List<Story> data) {
                 //TODO set the data from the DataSource to the adapter
+                adapter.setItems(getContext(), data);
+
             }
         });
 
